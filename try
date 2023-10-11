@@ -161,6 +161,17 @@ autodetect_union_helper() {
     fi
 }
 
+# start gid mapping
+# -U: use unix domain socket
+# -q0: don't wait after EOF on stdin
+# Sometimes this will run first before the other nc starts listening, so we will retry
+while ! echo a | nc -Uq0 "$socket1" 2> /dev/null; do sleep 0.25 ; done
+
+# Wait for gid to be mapped
+# -l: listen
+# -U: use unix socket
+nc -lU "$socket2" > /dev/null
+
 # Detect if union_helper is set, if not, we try to autodetect them
 if [ -z "$UNION_HELPER" ]
 then
@@ -260,13 +271,22 @@ EOF
     # enable job control so interactive commands will play nicely with try asking for user input later(for committing). #5
     [ -t 0 ] && set -m
 
+    # TZ: Does this adhere to the styleguide?
+    # TZ: TODO: un-export them later
+    socket1="$(mktemp)"
+    socket2="$(mktemp)"
+    export socket1
+    export socket2
+
+    # Running mapper in a subshell to suppress job control [1] + Done message
+    (mapper&)
+
     # --mount: mounting and unmounting filesystems will not affect the rest of the system outside the unshare
-    # --map-root-user: map to the superuser UID and GID in the newly created user namespace.
     # --user: the process will have a distinct set of UIDs, GIDs and capabilities.
     # --pid: create a new process namespace (needed fr procfs to work right)
     # --fork: necessary if we do --pid
     #         "Creation of a persistent PID namespace will fail if the --fork option is not also specified."
-    unshare --mount --map-root-user --user --pid --fork "$mount_and_execute"
+    unshare --mount --user --pid --fork "$mount_and_execute"
     TRY_EXIT_STATUS=$?
 
     ################################################################################
@@ -502,6 +522,36 @@ error() {
     warn "$msg"
     exit "$exit_status"
 }
+
+################################################################################
+# Change uid/gid mapping
+################################################################################
+
+mapper() {
+    # TZ: TODO: fix check whether gidmapper exists
+    # Wait for unshare process to start
+    # -U: use unix domain socket
+    # -l: listen
+    nc -Ul "$socket1" > /dev/null
+    # Get the pid of the unshare process with current pid as parent
+    pid=$(pgrep -P $$ -f unshare)
+
+    # Map root user to current user, and all groups
+    if [ "$(id -u)" = 0 ]
+    then
+        # If we're running as root, we can map all the users
+        gidmapper "$pid" 0 0 65535 0 0 65535
+    else
+        # If not running as root, we can only mount the caller user
+        gidmapper "$pid" 0 "$(id -u)" 1 0 0 65535
+    fi
+
+    # Notify the unshare process that we have finished
+    # -U: use unix domain socket
+    # -q0: don't wait after EOF
+    echo a | nc -Uq0 "$socket2"
+}
+
 
 ################################################################################
 # Argument parsing

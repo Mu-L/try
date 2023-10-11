@@ -25,6 +25,8 @@ disks.
 
 ### Dependencies
 
+Requires `netcat-openbsd` and `procps`.
+=======
 `try` relies on the following dependencies
 
 * `util-linux`
@@ -56,6 +58,8 @@ You only need the [`try` script](https://raw.githubusercontent.com/binpash/try/m
 $ git clone https://github.com/binpash/try.git
 ```
 
+You would also want to install the `gidmapper`, simply run `sh setup.sh`.
+=======
 #### Arch Linux
 
 `try` is present in [AUR](https://aur.archlinux.org/packages/try), you can install it with your preferred AUR helper:
