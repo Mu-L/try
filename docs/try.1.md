@@ -27,15 +27,15 @@ While using *try* you can choose to commit the result to the filesystem or compl
 
 -y
 
-: Assume yes to all prompts (implies -n is not used)
+: Assume yes to all prompts (implies -n is not used).
 
 -v
 
-: Show version information (and exit)
+: Show version information (and exit).
 
 -h
 
-: Show a usage message (and exit)
+: Show a usage message (and exit).
 
 
 ## Options
@@ -55,7 +55,7 @@ This option is recommended in case OverlayFS fails.
 
 -L *LOWER_DIRS*
 
-: Specify a colon-separated list of directories to be used as lower directories for the overlay, formatted as "dir1:dir2:...:dirn".
+: Specify a colon-separated list of directories to be used as lower directories for the overlay, formatted as "dir1:dir2:...:dirn" (implies -n is used).
 
 
 ## Subcommands
