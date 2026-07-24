@@ -6,7 +6,7 @@
 
 We're setting out to change that: `try cmd` and commit---or not.
 
-**News**: `try` received a [best paper](https://www.usenix.org/conferences/best-papers?taxonomy_vocabulary_1_tid=2026&title_1=OSDI) **and** distinguished artifact award at [OSDI'26](https://www.usenix.org/conferences/best-papers)!
+**News**: `try` received a [best paper](https://www.usenix.org/conferences/best-papers?taxonomy_vocabulary_1_tid=2026&title_1=OSDI) **and** distinguished artifact award at [OSDI'26](https://www.usenix.org/conference/osdi26/presentation/lamprou)!
 
 ## Description
 [![Main workflow](https://github.com/binpash/try/actions/workflows/test.yaml/badge.svg)](https://github.com/binpash/try/actions/workflows/test.yaml)
