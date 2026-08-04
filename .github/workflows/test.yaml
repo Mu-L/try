@@ -14,7 +14,6 @@ jobs:
       fail-fast: true
 
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - name: Allow unprivileged user namespaces (for Ubuntu 24.04)
@@ -26,7 +25,7 @@ jobs:
           sudo apt-get install expect mergerfs attr pandoc
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -42,7 +41,7 @@ jobs:
           make dist
 
       - name: Upload dist tarball
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: try-dist.tgz
           path: try-*.tgz
@@ -65,12 +64,13 @@ jobs:
           sudo apt-get install expect mergerfs attr pandoc
 
       - name: Download dist tarball
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Unpack tarball; configure and build utilities
         run: |
-          tar xzf try-dist.tgz/try-*.tgz --strip-components=1
-          rm -r try-dist.tgz
+          ls -lR
+          tar xzf try-*.tgz --strip-components=1
+          rm try-*.tgz
           ./configure --disable-utils
           make all
           sudo make install
@@ -107,7 +107,6 @@ jobs:
       fail-fast: false
 
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - name: Allow unprivileged user namespaces (for Ubuntu 24.04)
@@ -119,7 +118,7 @@ jobs:
           sudo apt-get install expect mergerfs attr pandoc
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -162,7 +161,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -172,7 +171,7 @@ jobs:
   trycase-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -181,11 +180,10 @@ jobs:
 
   version-check:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -196,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -212,7 +210,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
