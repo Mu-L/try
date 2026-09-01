@@ -58,6 +58,16 @@ jobs:
           name: packaging-assets
           path: packaging.tgz
 
+      - name: Package Debian packaging assets
+        run: |
+          tar czf debian-packaging.tgz debian
+
+      - name: Upload Debian packaging assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: debian-packaging
+          path: debian-packaging.tgz
+
   package:
     needs: [dist, test-dist]
     runs-on: ubuntu-latest
@@ -94,6 +104,50 @@ jobs:
           path: |
             dist-packages/try*.deb
             dist-packages/try*.rpm
+
+  ppa-source-check:
+    needs: [dist, test-dist]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y debhelper dpkg-dev lintian pandoc
+
+      - name: Download dist tarball
+        uses: actions/download-artifact@v8
+        with:
+          name: try-dist.tgz
+
+      - name: Download Debian packaging assets
+        uses: actions/download-artifact@v8
+        with:
+          name: debian-packaging
+
+      - name: Assemble Debian source tree
+        run: |
+          # keep the try-VERSION/ directory from the dist tarball intact --
+          # dpkg-buildpackage needs the source in a properly named
+          # directory next to its .orig tarball, unlike the flattened tree
+          # the "package" job builds from.
+          tar xzf try-*.tgz
+          srcdir=$(echo try-*/)
+          version=${srcdir#try-}
+          version=${version%/}
+          tar czf "try_${version}.orig.tar.gz" "$srcdir"
+          tar xzf debian-packaging.tgz -C "$srcdir"
+          rm -f try-*.tgz debian-packaging.tgz
+          echo "SRCDIR=$srcdir" >> "$GITHUB_ENV"
+
+      - name: Build the Debian source package
+        run: |
+          cd "$SRCDIR"
+          dpkg-buildpackage -S -us -uc -sa
+
+      - name: Lint the source package
+        run: |
+          lintian try_*_source.changes
 
   test-dist:
     needs: dist

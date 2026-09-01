@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+# Makefile.in's install target uses $(bindir)/$(mandir) directly and has no
+# $(DESTDIR) support, so dh_auto_install's default "make install
+# DESTDIR=debian/try" would install straight onto the build machine instead
+# of into the staging directory. Point prefix directly at the staging
+# directory instead, matching what packaging/build_packages.sh already does
+# for the GitHub Releases build.
+override_dh_auto_install:
+	$(MAKE) install prefix=$(CURDIR)/debian/try/usr
