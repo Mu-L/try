@@ -7,7 +7,7 @@
 #
 # https://github.com/binpash/try
 
-TRY_VERSION="0.2.0"
+TRY_VERSION="0.2.1"
 TRY_COMMAND="${0##*/}"
 EXECID="$(date +%s%3N)"
 export EXECID
