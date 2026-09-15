@@ -1,5 +1,7 @@
-try (0.2.0-1) UNRELEASED; urgency=medium
+try (0.2.1-1) UNRELEASED; urgency=medium
 
-  * Initial Debian packaging.
+  * Add PPA release workflow: Debian source packaging (debian/) built,
+    linted, signed, and published to a Launchpad PPA by CI on version
+    tag pushes.
 
- -- try maintainers <try@binpa.sh>  Tue, 01 Sep 2026 10:08:54 -0400
+ -- try maintainers <try@binpa.sh>  Tue, 15 Sep 2026 14:32:00 -0400
